@@ -1,0 +1,423 @@
+LAB EXERCISES:
+
+A-Introduction to SQL: 
+
+create database  school_db;
+Query OK, 1 row affected (0.03 sec)
+
+mysql> use school_db;
+Database changed
+mysql> create table students(student_id int primary key auto_increment,student_name varchar(50),age int,class varchar(50),address varchar(50));
+Query OK, 0 rows affected (0.07 sec)
+
+mysql> insert into students values
+    -> (1,"jay",12,"four","Vadodara");
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into students values
+    -> (2,"Keya",12,"four","Vadodara");
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into students values
+    -> (3,"Raj",13,"five","Surat");
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into students values
+    -> (4,"Rajesh",13,"five","Surat");
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into students values
+    -> (5,"Raju",14,"six","Surat");
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select *from students;
++------------+--------------+------+-------+----------+
+| student_id | student_name | age  | class | address  |
++------------+--------------+------+-------+----------+
+|          1 | jay          |   12 | four  | Vadodara |
+|          2 | Keya         |   12 | four  | Vadodara |
+|          3 | Raj          |   13 | five  | Surat    |
+|          4 | Rajesh       |   13 | five  | Surat    |
+|          5 | Raju         |   14 | six   | Surat    |
++------------+--------------+------+-------+----------+
+5 rows in set (0.00 sec)
+
+
+A- SQL Syntax:
+
+select student_name,age from students;
++--------------+------+
+| student_name | age  |
++--------------+------+
+| jay          |   12 |
+| Keya         |   12 |
+| Raj          |   13 |
+| Rajesh       |   13 |
+| Raju         |   14 |
++--------------+------+
+5 rows in set (0.00 sec)
+
+mysql> select student_name,age from students where age>12;
++--------------+------+
+| student_name | age  |
++--------------+------+
+| Raj          |   13 |
+| Rajesh       |   13 |
+| Raju         |   14 |
++--------------+------+
+3 rows in set (0.00 sec)
+
+
+A- SQL Constraints: 
+
+create table teachers(teacher_id int primary key auto_increment,teacher_name varchar(50) NOT NULL,email varchar(50) UNIQUE);
+
+
+alter table students add column teacher_id int;
+Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> alter table students add  FOREIGN KEY(teacher_id) references teachers(teacher_id);
+
+
+A-  Main SQL Commands and Sub-commands (DDL):
+
+create table courses(course_id int primary key auto_increment,course_name varchar(50),course_credits int);
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> create database university_db;
+
+
+A -  ALTER Command :
+
+alter table courses add column course_duration date;
+alter table courses drop column course_credits;
+
+
+A- DROP Command:
+
+drop table students;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> drop table teachers;
+Query OK, 0 rows affected (0.02 sec)
+
+
+A - Data Manipulation Language (DML) 
+
+INSERT INTO courses (course_name, course_duration)
+VALUES 
+('Web Development', '2025-12-31'),
+('Data Science', '2025-11-30'),
+('Cyber Security', '2026-01-15');
+
+update courses set course_duration = '2026-03-15' where course_id =3;
+
+delete from courses where course_id =2;
+
+A -  Data Query Language (DQL) :
+
+select *from courses;
++-----------+-----------------+-----------------+
+| course_id | course_name     | course_duration |
++-----------+-----------------+-----------------+
+|         1 | Web Development | 2025-12-31      |
+|         3 | Cyber Security  | 2026-03-15      |
+|         4 | Data Science    | 2025-11-22      |
++-----------+-----------------+-----------------+
+3 rows in set (0.00 sec)
+
+mysql> select *from courses order by course_duration desc;
++-----------+-----------------+-----------------+
+| course_id | course_name     | course_duration |
++-----------+-----------------+-----------------+
+|         3 | Cyber Security  | 2026-03-15      |
+|         1 | Web Development | 2025-12-31      |
+|         4 | Data Science    | 2025-11-22      |
++-----------+-----------------+-----------------+
+3 rows in set (0.00 sec)
+
+mysql> select *from courses limit 2;
++-----------+-----------------+-----------------+
+| course_id | course_name     | course_duration |
++-----------+-----------------+-----------------+
+|         1 | Web Development | 2025-12-31      |
+|         3 | Cyber Security  | 2026-03-15      |
++-----------+-----------------+-----------------+
+
+A -  Data Control Language (DCL):
+
+A - Transaction Control Language (TCL) :
+
+-> COMMIT: 
+
+SELECT *FROM courses;
++-----------+-----------------+-----------------+
+| course_id | course_name     | course_duration |
++-----------+-----------------+-----------------+
+|         1 | Web Development | 2025-12-31      |
+|         3 | Cyber Security  | 2026-03-15      |
+|         4 | Data Science    | 2025-11-22      |
++-----------+-----------------+-----------------+
+
+ START TRANSACTION;
+
+INSERT INTO courses VALUES(5,"Data Analys","2025-11-24");
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SELECT *FROM courses;
++-----------+-----------------+-----------------+
+| course_id | course_name     | course_duration |
++-----------+-----------------+-----------------+
+|         1 | Web Development | 2025-12-31      |
+|         3 | Cyber Security  | 2026-03-15      |
+|         4 | Data Science    | 2025-11-22      |
+|         5 | Data Analys     | 2025-11-24      |
++-----------+-----------------+-----------------+
+4 rows in set (0.00 sec)
+
+mysql> commit;
+
+-> ROLLBACK:
+
+
+mysql> START TRANSACTION;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> INSERT INTO courses VALUES(6,"IT","2025-11-24");
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SELECT *FROM courses;
++-----------+-----------------+-----------------+
+| course_id | course_name     | course_duration |
++-----------+-----------------+-----------------+
+|         1 | Web Development | 2025-12-31      |
+|         3 | Cyber Security  | 2026-03-15      |
+|         4 | Data Science    | 2025-11-22      |
+|         5 | Data Analys     | 2025-11-24      |
+|         6 | IT              | 2025-11-24      |
++-----------+-----------------+-----------------+
+5 rows in set (0.00 sec)
+
+mysql> rollback;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT *FROM courses;
++-----------+-----------------+-----------------+
+| course_id | course_name     | course_duration |
++-----------+-----------------+-----------------+
+|         1 | Web Development | 2025-12-31      |
+|         3 | Cyber Security  | 2026-03-15      |
+|         4 | Data Science    | 2025-11-22      |
+|         5 | Data Analys     | 2025-11-24      |
++-----------+-----------------+-----------------+
+
+
+
+-> SAVEPOINT: 
+
+START TRANSACTION;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT *FROM courses;
++-----------+-----------------+-----------------+
+| course_id | course_name     | course_duration |
++-----------+-----------------+-----------------+
+|         1 | Web Development | 2025-12-31      |
+|         3 | Cyber Security  | 2026-03-15      |
+|         4 | Data Science    | 2025-11-22      |
+|         5 | Data Analys     | 2025-11-24      |
++-----------+-----------------+-----------------+
+4 rows in set (0.00 sec)
+
+mysql> SAVEPOINT UP;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> UPDATE courses SET course_duration = "2025-10-10";
+Query OK, 4 rows affected (0.00 sec)
+Rows matched: 4  Changed: 4  Warnings: 0
+
+mysql> SELECT *FROM courses;
++-----------+-----------------+-----------------+
+| course_id | course_name     | course_duration |
++-----------+-----------------+-----------------+
+|         1 | Web Development | 2025-10-10      |
+|         3 | Cyber Security  | 2025-10-10      |
+|         4 | Data Science    | 2025-10-10      |
+|         5 | Data Analys     | 2025-10-10      |
++-----------+-----------------+-----------------+
+4 rows in set (0.00 sec)
+
+mysql> ROLLBACK TO UP;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT *FROM courses;
++-----------+-----------------+-----------------+
+| course_id | course_name     | course_duration |
++-----------+-----------------+-----------------+
+|         1 | Web Development | 2025-12-31      |
+|         3 | Cyber Security  | 2026-03-15      |
+|         4 | Data Science    | 2025-11-22      |
+|         5 | Data Analys     | 2025-11-24      |
++-----------+-----------------+-----------------+
+
+A -  SQL Joins : 
+
+-> INNER JOINS: 
+
+select emp.name, d.department_name
+    -> from employees emp
+    -> inner join departments d ON emp.department_id = d.department_id;
++---------------+-----------------+
+| name          | department_name |
++---------------+-----------------+
+| Alice Johnson | Human Resources |
+| Bob Smith     | Engineering     |
+| Carol Lee     | Finance         |
+| David Kim     | Engineering     |
+| Eva Patel     | Engineering     |
++---------------+-----------------+
+
+-> left joins: 
+
+select d.department_name,emp.name
+    -> from departments d
+    -> left join  employees emp on d.department_id = emp.department_id;
++-----------------+---------------+
+| department_name | name          |
++-----------------+---------------+
+| Human Resources | Alice Johnson |
+| Finance         | Carol Lee     |
+| Engineering     | Bob Smith     |
+| Engineering     | David Kim     |
+| Engineering     | Eva Patel     |
+| Sales           | NULL          |
+| Marketing       | NULL          |
++-----------------+---------------+
+
+
+A - 12 :  SQL Group By:
+
+-> select count(*), d.department_name
+    -> from employees
+    -> inner join departments d on employees.department_id = d.department_id
+    -> group by employees.department_id;
++----------+-----------------+
+| count(*) | department_name |
++----------+-----------------+
+|        1 | Human Resources |
+|        1 | Finance         |
+|        3 | Engineering     |
++----------+-----------------+
+
+-> select count(*), d.department_name,avg(salary)
+    -> from employees
+    -> inner join departments d on employees.department_id = d.department_id
+    -> group by employees.department_id;
++----------+-----------------+--------------+
+| count(*) | department_name | avg(salary)  |
++----------+-----------------+--------------+
+|        1 | Human Resources | 60000.000000 |
+|        3 | Engineering     | 65666.666667 |
+|        1 | Finance         | 50000.000000 |
++----------+-----------------+--------------+
+
+
+A - 13 :  SQL Stored Procedure : 
+
+-> delimiter //
+mysql> create procedure all_emp()
+    -> begin
+    -> select *from employees;
+    -> end//
+
+call all_emp();
++-------------+---------------+---------------------------+------------+----------+---------------+
+| employee_id | name          | email                     | hire_date  | salary   | department_id |
++-------------+---------------+---------------------------+------------+----------+---------------+
+|           1 | Alice Johnson | alice.johnson@example.com | 2022-03-15 | 60000.00 |             1 |
+|           2 | Bob Smith     | bob.smith@example.com     | 2021-06-10 | 75000.00 |             3 |
+|           3 | Carol Lee     | carol.lee@example.com     | 2023-01-25 | 50000.00 |             2 |
+|           4 | David Kim     | david.kim@example.com     | 2020-11-05 | 67000.00 |             3 |
+|           5 | Eva Patel     | eva.patel@example.com     | 2022-07-30 | 55000.00 |             3 |
++-------------+---------------+---------------------------+------------+----------+---------------+
+
+-> delimiter //
+mysql> create procedure cours(in cours_id int)
+    -> begin
+    -> select *from courses where course_id = cours_id;
+    -> end//
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> delimiter ;
+mysql> call cours(1);
++-----------+-----------------+-----------------+
+| course_id | course_name     | course_duration |
++-----------+-----------------+-----------------+
+|         1 | Web Development | 2025-12-31      |
++-----------+-----------------+-----------------+
+
+
+
+A - 14 : SQL View : 
+
+-> create view emp as select *from employees;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select *from emp;
++-------------+---------------+---------------------------+------------+----------+---------------+
+| employee_id | name          | email                     | hire_date  | salary   | department_id |
++-------------+---------------+---------------------------+------------+----------+---------------+
+|           1 | Alice Johnson | alice.johnson@example.com | 2022-03-15 | 60000.00 |             1 |
+|           2 | Bob Smith     | bob.smith@example.com     | 2021-06-10 | 75000.00 |             3 |
+|           3 | Carol Lee     | carol.lee@example.com     | 2023-01-25 | 50000.00 |             2 |
+|           4 | David Kim     | david.kim@example.com     | 2020-11-05 | 67000.00 |             3 |
+|           5 | Eva Patel     | eva.patel@example.com     | 2022-07-30 | 55000.00 |             3 |
++-------------+---------------+---------------------------+------------+----------+---------------+
+
+->  create or replace view emp as select *from employees where salary <=60000;
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> select *from emp;
++-------------+---------------+---------------------------+------------+----------+---------------+
+| employee_id | name          | email                     | hire_date  | salary   | department_id |
++-------------+---------------+---------------------------+------------+----------+---------------+
+|           1 | Alice Johnson | alice.johnson@example.com | 2022-03-15 | 60000.00 |             1 |
+|           3 | Carol Lee     | carol.lee@example.com     | 2023-01-25 | 50000.00 |             2 |
+|           5 | Eva Patel     | eva.patel@example.com     | 2022-07-30 | 55000.00 |             3 |
++-------------+---------------+---------------------------+------------+----------+---------------+
+
+A - 15 : SQL TRIGGERS :
+
+-> create trigger a_employees after insert on employees
+    -> for each row insert into log(emp_id,new_employee,date) values(new.employee_id,new.name,CURRENT_DATE());
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> insert into employees(name,email,hire_date,salary,department_id) values("Rajesh Patel","rajesh@gmail.com","2025-08-17",89000,2);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select *from log;
++----+--------+--------------+------------+
+| id | emp_id | new_employee | date       |
++----+--------+--------------+------------+
+|  1 |      0 | Raj Patel    | 2025-08-17 |
+|  2 |      0 | Raju Patel   | 2025-08-17 |
+|  3 |      8 | Rajesh Patel | 2025-08-17 |
++----+--------+--------------+------------+
+
+
+-> create trigger au_employee after update on employees
+    -> for each row insert into last_modified_emp(emp_id,emp_name,last_modified,emp_salary) values(old.employee_id,old.name,now(),new.salary);
+Query OK, 0 rows affected (0.01 sec)
+
+mysql> update employees set salary = 90000 where employee_id = 1;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> select *from last_modified_emp;
++----+--------+---------------+---------------------+------------+
+| id | emp_id | emp_name      | last_modified       | emp_salary |
++----+--------+---------------+---------------------+------------+
+|  1 |      1 | Alice Johnson | 2025-08-18 08:53:19 |   90000.00 |
++----+--------+---------------+---------------------+------------+
+
