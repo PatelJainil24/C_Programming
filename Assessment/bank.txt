@@ -1,0 +1,120 @@
+tables : Bank , Account Holder , Loan 
+
+Bank : 
+branch id , 
+branch name, 
+branch city 
+
+
+Account holder : 
+
+account holder's id, 
+account no, 
+account holder's name, 
+city, 
+contact, 
+date of account created, 
+account status (active or terminated),
+account type, 
+balance
+
+Loan : 
+
+loan no, 
+branch id, 
+account holder's id, 
+loan amount, 
+loan type 
+
+create table bank_branch(branch_id int primary key auto_increment, branch_name varchar(50),brach_city varchar(50));
+
+create table account_holders(holders_id int primary key auto_increment, 
+account_no int unique, 
+account_holder_name varchar(50), 
+city varchar(50), 
+contact int,
+account_created datetime,
+account_status varchar(50),
+account_type varchar(50),
+balance int);
+
+
+create table loan(loan_id int primary key auto_increment,
+branch_id int, 
+holders_id int, 
+loan_amount int,
+loan_type varchar(50),
+foreign key (branch_id) REFERENCES bank_branch(branch_id),
+foreign key (holders_id) REFERENCES account_holders(holders_id));
+
+
+DELIMITER $$
+
+CREATE PROCEDURE TransferFunds(
+    IN p_from_account INT,
+    IN p_to_account INT,
+    IN p_amount DECIMAL(10,2)
+)
+BEGIN
+    DECLARE current_balance DECIMAL(10,2);
+
+    -- Start transaction
+    START TRANSACTION;
+
+    -- Check source account balance
+    SELECT balance INTO current_balance
+    FROM account_holders
+    WHERE account_no = p_from_account
+      FOR UPDATE;
+
+    IF current_balance IS NULL THEN
+        -- Log failed transaction
+        INSERT INTO transaction_log(from_account, to_account, amount, status, remarks)
+        VALUES (p_from_account, p_to_account, p_amount, 'Failed', 'Source account not found');
+
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Source account does not exist';
+    ELSEIF current_balance < p_amount THEN
+        -- Log failed transaction
+        INSERT INTO transaction_log(from_account, to_account, amount, status, remarks)
+        VALUES (p_from_account, p_to_account, p_amount, 'Failed', 'Insufficient funds');
+
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Insufficient funds';
+    ELSE
+        -- Debit source account
+        UPDATE account_holders
+        SET balance = balance - p_amount
+        WHERE account_no = p_from_account;
+
+        -- Credit destination account
+        UPDATE account_holders
+        SET balance = balance + p_amount
+        WHERE account_no = p_to_account;
+
+        -- Check if destination account was valid
+        IF ROW_COUNT() = 0 THEN
+            -- Log failed transaction
+            INSERT INTO transaction_log(from_account, to_account, amount, status, remarks)
+            VALUES (p_from_account, p_to_account, p_amount, 'Failed', 'Destination account not found');
+
+            ROLLBACK;
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Destination account does not exist';
+        ELSE
+            -- Log successful transaction
+            INSERT INTO transaction_log(from_account, to_account, amount, status, remarks)
+            VALUES (p_from_account, p_to_account, p_amount, 'Success', 'Transfer completed');
+
+            COMMIT;
+        END IF;
+    END IF;
+END $$
+
+DELIMITER ;
+
+
+CALL TransferFunds(1001, 1002, 100);
+
